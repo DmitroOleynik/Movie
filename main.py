@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Path
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
+from datetime import datetime
 
 
 app = FastAPI()
@@ -9,8 +10,14 @@ movies = {}
 class Movie(BaseModel):
     title: str
     director: str
-    release_year: int
+    release_year: int = Field(le=int(str(datetime.now())[:4]), ge=1888)
     rating: float
+
+    @classmethod
+    @field_validator('title')
+    def validate_title(cls, title):
+        if title.capitalize() != title:
+            raise ValueError('Title must be start uppercase')
 
 
 @app.get('/movies')
