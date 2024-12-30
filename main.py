@@ -13,12 +13,19 @@ class Movie(BaseModel):
     release_year: int = Field(le=datetime.now().year, ge=1888)
     rating: float
 
-    @field_validator('title', mode='after')
+    @field_validator('title')
     @classmethod
     def validate_title(cls, title):
         if title != title.capitalize():
             raise ValueError('Title must be start uppercase')
         return title
+
+    @field_validator('director')
+    @classmethod
+    def validate_director(cls, director):
+        if director != director.title():
+            raise ValueError('Each word must begin with a capital letter')
+        return director
 
 
 @app.get('/movies')
